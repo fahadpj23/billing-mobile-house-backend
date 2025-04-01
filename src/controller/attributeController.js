@@ -16,13 +16,11 @@ const addAttribute = async (req, res) => {
       attributeName,
       status,
     });
-
-    console.log(attrib);
     const addAttributeValue = await attributeValueModel.bulkCreate(
       attributeValues.map((attributeValue) => ({
         attributeId: newAttribute?.id,
         name: attributeValue.name,
-        status: 1,
+        status: attributeValue?.status,
       }))
     );
     res.status(201).json({
