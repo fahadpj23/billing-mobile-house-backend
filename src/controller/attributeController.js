@@ -4,7 +4,14 @@ const attributeModel = db.attribute;
 const attributeValueModel = db.attributeValue;
 
 const getAttribute = async (req, res) => {
-  const attributeList = await attributeModel.findAll({});
+  const attributeList = await attributeModel.findAll({
+    include: [
+      {
+        model: attributeValueModel,
+        as: "attributeValues",
+      },
+    ],
+  });
   res.status(200).json({ attributeList });
 };
 
