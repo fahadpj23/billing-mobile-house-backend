@@ -9,23 +9,33 @@ const getAttribute = async (req, res) => {
 };
 
 const addAttribute = async (req, res) => {
-  console.log(req.body);
   const { attributeName, status, attributeValues } = req.body;
+
+  const transaction = await db.sequelize.transaction();
   try {
-    const newAttribute = await attributeModel.create({
-      attributeName,
-      status,
-    });
-    const addAttributeValue = await attributeValueModel.bulkCreate(
-      attributeValues.map((attributeValue) => ({
-        attributeId: newAttribute?.id,
-        name: attributeValue.name,
-        status: attributeValue?.status,
-      }))
+    const newAttribute = await attributeModel.create(
+      {
+        attributeName,
+        status,
+      },
+      { transaction }
     );
+    const newAttributeValues = attributeValues.map((attributeValue) => ({
+      ...attributeValue,
+      attributeId: newAttribute.id,
+    }));
+    const addAttributeValues = await attributeValueModel.bulkCreate(
+      newAttributeValues,
+      {
+        transaction,
+      }
+    );
+
+    await transaction.commit();
     res.status(201).json({
       message: "attrubute addedd succesfully",
       attribute: newAttribute,
+      attributeValue: addAttributeValues,
     });
   } catch (error) {
     if (error.attributeName === "SequelizeUniqueConstraintError") {
@@ -34,7 +44,7 @@ const addAttribute = async (req, res) => {
       });
     } else {
       res.status(500).json({
-        message: "An error occurred while creating the user",
+        message: error.message,
         error: error.message,
       });
     }
