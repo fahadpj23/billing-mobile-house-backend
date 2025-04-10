@@ -8,11 +8,8 @@ module.exports = (sequelize, DataTypes) => {
         key: "id",
       },
     },
-    name: {
+    attributeValue: {
       type: DataTypes.STRING,
-    },
-    status: {
-      type: DataTypes.BOOLEAN,
     },
   });
   return attributeValue;

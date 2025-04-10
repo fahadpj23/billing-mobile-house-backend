@@ -18,7 +18,7 @@ const getAttribute = async (req, res) => {
 
 const addAttribute = async (req, res) => {
   const { attributeName, status, attributeValues } = req.body;
-
+  console.log(attributeName);
   const transaction = await db.sequelize.transaction();
   try {
     const newAttribute = await attributeModel.create(
@@ -29,7 +29,7 @@ const addAttribute = async (req, res) => {
       { transaction }
     );
     const newAttributeValues = attributeValues.map((attributeValue) => ({
-      ...attributeValue,
+      attributeValue,
       attributeId: newAttribute.id,
     }));
     const addAttributeValues = await attributeValueModel.bulkCreate(
