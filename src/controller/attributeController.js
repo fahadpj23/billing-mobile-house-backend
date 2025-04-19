@@ -1,5 +1,5 @@
-const { where } = require("sequelize");
 const db = require("../models/index");
+const { handleSequelizeError } = require("../utils/sequelizeErrorHandler");
 
 const attributeModel = db.attribute;
 const attributeValueModel = db.attributeValue;
@@ -9,7 +9,7 @@ const getAttribute = async (req, res) => {
     include: [
       {
         model: attributeValueModel,
-        as: "attributeValues",
+        attributes: ["attributeValue"],
       },
     ],
   });
@@ -18,7 +18,6 @@ const getAttribute = async (req, res) => {
 
 const addAttribute = async (req, res) => {
   const { attributeName, status, attributeValues } = req.body;
-  console.log(attributeName);
   const transaction = await db.sequelize.transaction();
   try {
     const newAttribute = await attributeModel.create(
@@ -46,16 +45,12 @@ const addAttribute = async (req, res) => {
       attributeValue: addAttributeValues,
     });
   } catch (error) {
-    if (error.attributeName === "SequelizeUniqueConstraintError") {
-      res.status(400).json({
-        message: "attribute already exist",
-      });
-    } else {
-      res.status(500).json({
-        message: error.message,
-        error: error.message,
-      });
-    }
+    const errResponse = handleSequelizeError(error);
+    console.log(errResponse);
+    res.status(errResponse.status).json({
+      message: errResponse.message,
+      details: errResponse.details,
+    });
   }
 };
 
