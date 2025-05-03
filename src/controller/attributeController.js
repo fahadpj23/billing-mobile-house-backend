@@ -46,7 +46,6 @@ const addAttribute = async (req, res) => {
     });
   } catch (error) {
     const errResponse = handleSequelizeError(error);
-    console.log(errResponse);
     res.status(errResponse.status).json({
       message: errResponse.message,
       details: errResponse.details,

@@ -16,7 +16,7 @@ module.exports = {
         status: 400,
         error: "Validation Error",
         message: messages[0].message,
-        details: "One or more validation errors occurred",
+        details: " validation errors occurred",
       };
     }
 
